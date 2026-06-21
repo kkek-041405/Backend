@@ -1,11 +1,12 @@
-# Step 1: Build the JAR using a Maven container
-FROM maven:3.9-eclipse-temurin-17 AS build
+# Step 1: Build Stage (Uses a Maven image with JDK 25)
+FROM maven:3.9-eclipse-temurin-21 AS build
 WORKDIR /app
 COPY . .
-RUN ./mvnw clean package -DskipTests
+# We use the built-in Maven tool to compile your Java 25 code
+RUN mvn clean package -DskipTests
 
-# Step 2: Run the JAR using a lightweight Java JRE container
-FROM eclipse-temurin:17-jre
+# Step 2: Run Stage (Uses the official lightweight Java 25 Runtime Environment)
+FROM eclipse-temurin:25-jre
 WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
 EXPOSE 8080
